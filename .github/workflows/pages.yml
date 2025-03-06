@@ -55,7 +55,7 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
-          hugo \
+          cd Docs/ && hugo \
             --gc --minify \
             --baseURL "https://${{ github.repository_owner }}.github.io/
       - name: Upload artifact
