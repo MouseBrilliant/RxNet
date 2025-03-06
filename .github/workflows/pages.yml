@@ -55,9 +55,10 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
-          cd Docs/ && hugo \
+          hugo \
             --gc --minify \
-            --baseURL "https://${{ github.repository_owner }}.github.io/
+            --baseURL "https://${{ github.repository_owner }}.github.io/ \
+            Docs/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
