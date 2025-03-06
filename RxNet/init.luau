@@ -9,6 +9,8 @@
     An elegant, fast, networking library for luau
 
     Author: MouseBrilliant
+    Licence: MIT
+    Edited: Mar, 1, 2025
 
 ]]
 
@@ -20,7 +22,6 @@
 ]]
 
 local Tessel = require(script:WaitForChild("Tessel"))
-local Mux = require(script:WaitForChild("Mux"))
 
 --[[
 
@@ -30,7 +31,7 @@ local Mux = require(script:WaitForChild("Mux"))
 
 export type RxNet = {
     Register: (ModuleScript, table) -> nil, -- Registers a module for networking.
-    GetCurrentTesselMap: () -> { [string]: Tessel.Tessel }, -- Retrieves the current mapped modules.
+    GetCurrentTesselMap: () -> Tessel.SyncTesselation, -- Retrieves the current mapped modules.
 }
 
 --[[
@@ -39,7 +40,11 @@ export type RxNet = {
 
 ]]
 
-local RxNet = {}
+local RxNet = {
+    Event = Tessel.Event,
+    Function = Tessel.Function,
+    Unreliable = Tessel.Unreliable,
+}
 
 function RxNet.Register(module: ModuleScript, net: table)
     --[[
@@ -48,7 +53,7 @@ function RxNet.Register(module: ModuleScript, net: table)
         Uses Tessel to establish a structured function map.
 
     ]]
-    Tessel.new(module, net)
+    Tessel.track(module, net)
 end
 
 function RxNet.GetCurrentTesselMap()
@@ -58,18 +63,15 @@ function RxNet.GetCurrentTesselMap()
         Uses Mux to fetch the indexed module-function relationships.
 
     ]]
-    return Mux.getIndex()
+    return Tessel.GetIndex()
 end
 
-function RxNet.GetCurrentCantorIndex()
-    return Mux.getCantorIndex()
-end
 
 --[[
 
-    Finalizing RxNet:
-    Freezes the module to prevent modifications.
+    Finally, Synchronizing Client and Server
 
 ]]
+
 
 return table.freeze(RxNet)
