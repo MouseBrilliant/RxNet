@@ -55,13 +55,15 @@ type TesselNet = table -- User provided table used as an index
 
 type EndPointName = string
 type EndPointType = "event" | "function" | "unreliable" | nil
-type EndPoint = {type : EndPointType,id: CantorID}
+type EndPoint = {type : EndPointType,id: CantorID, registered : boolean}
+type Outgoing = (any...)->nil
 
 type TesselEndPoints = {[EndPointName] : EndPoint}
 
 type TesselIndex = {
     id : ID,
     EndPoints : TesselEndPoints,
+    Outgoing: {[EndPointName] : Outgoing},
     count : number
 }
 
@@ -147,11 +149,6 @@ end
 local SyncTesselation:{[Location] :TesselIndex} = {}
 local Tesselation:{[TesselNet] : TesselIndex} = {}
 local CantorRecievingIndex: CantorIndex = {}
-local OutgoingIndex: {
-    [TesselNet] : {
-        [EndPointName] : ()->nil,
-    }
-} = {}
 local NumTessels = 0
 
 --[[
@@ -241,6 +238,7 @@ function Tessel.track(module: ModuleScript, net: table)
         index = {
             id = NumTessels,
             EndPoints = {},
+            Outgoing = {},
             count = 0
         }
         NumTessels += 1
@@ -248,6 +246,7 @@ function Tessel.track(module: ModuleScript, net: table)
     else
         index = {
             EndPoints = {},
+            Outgoing = {},
             count = 0
         }
 
@@ -268,10 +267,13 @@ function Tessel.track(module: ModuleScript, net: table)
     -- Setup Tracking Tables
     SyncTesselation[location] = index
     Tesselation[net] = index
-    OutgoingIndex[net] = {}
 
     -- Setup Tessel tracking
-    setmetatable(net,Tessel)
+    setmetatable(net,{
+        __index = index.Outgoing,
+        __newindex = Tessel.__newindex,
+        __metatable = Tessel.__metatable
+    })
 
     -- forcing tessel to track missed methods
     for key,value in net do
@@ -279,18 +281,6 @@ function Tessel.track(module: ModuleScript, net: table)
         net[key] = nil
     end
 end
-
-Tessel.__index = function(net: table, key: string)
-
-    local ep : ()->nil = OutgoingIndex[net][key]
-
-    if not ep then
-        error(`{key} is not a valid RxNet function`)
-    end
-
-    return ep
-end
-
 
 Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)?)
     assert(typeof(key) == "string", "Function key must be a string.")
@@ -314,7 +304,8 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
 
         local cid : CantorID = endPoint.id
         if endPoint.type == TesselEvent then
-            --//TODO:
+            endPoint.registered = true
+            CantorRecievingIndex[cid] = fn
         elseif endPoint.type == TesselFunction then
             --//TODO:
         elseif endPoint.type == TesselUnreliable then
@@ -342,6 +333,17 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
 
     if not t or t == TesselEvent then
         endPoint.type = TesselEvent
+
+        if IsServer then
+            TesselNet.Outgoing[key] = function(...)
+                Netronaut.SendPacket(cid,...)
+            end
+        else
+            TesselNet.Outgoing[key] = function(...)
+                Netronaut.SendPacket(cid,...)
+            end
+
+        end
     elseif t == TesselFunction then
         endPoint.type = TesselFunction
     elseif t == TesselUnreliable then
@@ -356,6 +358,29 @@ end
 
 function Tessel.GetIndex()
     return SyncTesselation
+end
+
+if IsServer then
+
+    Netronaut.RecievePacket(function(player: Player, cid: CantorID, ...)
+        if cid == nil or CantorRecievingIndex[cid] == nil then
+            warn(`{player} attempted to call an unregistered or invalid RxNet endpoint`)
+            return
+        end
+        CantorRecievingIndex[cid](player,...)
+    end)
+
+else
+
+    Netronaut.RecievePacket(function(cid: CantorIndex,...)
+        if cid == nil or CantorRecievingIndex[cid] == nil then
+            warn(`server attempted to call an unregistered or invalid RxNet endpoint!!!`)
+            return
+        end
+        CantorRecievingIndex[cid](...)
+    end)
+
+
 end
 
 

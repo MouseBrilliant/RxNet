@@ -1,9 +1,6 @@
 local Net = require(game.ReplicatedStorage.Shared.Net)
-local Net = require(game.ReplicatedStorage.Shared.Net2)
-local Net = require(game.ReplicatedStorage.Shared.Net3)
-local RxNet = require(game.ReplicatedStorage.RxNet)
 
-function Net:ABCDEFG()
+function Net.Foo(player : Player)
+    print(`{player} : Ping!`)
+    Net.Bar(`Pong! {math.random(0,10)}`,player)
 end
-
-print(RxNet.GetCurrentTesselMap())

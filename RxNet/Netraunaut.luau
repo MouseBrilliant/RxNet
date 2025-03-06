@@ -139,9 +139,7 @@ if game:GetService("RunService"):IsServer() then
             Handles incoming reliable packets from clients.
             If the callback returns a value, it is sent back as a response.
         ]]
-        RemoteEvent.OnServerEvent:Connect(function(player, ...)
-            fn(...,player)
-        end)
+        RemoteEvent.OnServerEvent:Connect(fn)
     end
 
     function Netronaut.TossPacket(...)
@@ -190,9 +188,7 @@ else
             Handles incoming reliable packets from the server.
             If the callback returns a value, it is sent back as a response.
         ]]
-        RemoteEvent.OnClientEvent:Connect(function(...)
-            fn(...)
-        end)
+        RemoteEvent.OnClientEvent:Connect(fn)
     end
 
     function Netronaut.TossPacket(...)
