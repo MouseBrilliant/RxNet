@@ -6,7 +6,7 @@
     |_| \_\/_/\_\_| \_|\___|\__|
 
 
-    An Elegant, fast, networking library for luau
+    An Elegant, fast, networking library for roblox
 
     Author: MouseBrilliant
 
