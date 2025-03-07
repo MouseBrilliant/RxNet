@@ -333,19 +333,28 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
 
     if not t or t == TesselEvent then
         endPoint.type = TesselEvent
-
-        if IsServer then
-            TesselNet.Outgoing[key] = function(...)
-                Netronaut.SendPacket(cid,...)
-            end
-        else
-            TesselNet.Outgoing[key] = function(...)
-                Netronaut.SendPacket(cid,...)
-            end
-
+        TesselNet.Outgoing[key] = function(...)
+            Netronaut.SendPacket(cid,...)
         end
     elseif t == TesselFunction then
         endPoint.type = TesselFunction
+        if IsServer then
+            TesselNet.Outgoing[key] = function()
+                error("Functions can only be invoked by clients!!")
+            end
+        else
+            Tessel.Outgoing[key] = function(...)
+                local args = ...
+                return Promise.new(function(resolve,reject,_)
+                    local result = Netronaut.CallFunction(cid,args)
+                    if result then
+                        resolve(result)
+                    else
+                        reject()
+                    end
+                end)
+            end
+        end
     elseif t == TesselUnreliable then
         endPoint.type = TesselUnreliable
     else
@@ -368,6 +377,10 @@ if IsServer then
             return
         end
         CantorRecievingIndex[cid](player,...)
+    end)
+
+    Netronaut.HandleFunction(function(player : Player, cid : CantorID, ...)
+        
     end)
 
 else

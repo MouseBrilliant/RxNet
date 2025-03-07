@@ -21,17 +21,19 @@ __Zero Configuration__ – Ready to use out of the box with no setup required, y
 __Custom Streaming__ – Supports streaming large amounts of data efficiently, inspired by Madwork's Replica system.
 ## Show me the code!
 
-Note the structure for the files:
+<div class="grid cards" markdown>
+-   __Hierarchy__
 
-
-- :material-folder-open: ReplicatedStorage
-    - :octicons-file-code-16: RxNet (the module)
-    - :octicons-file-code-16: Net.rxn
-- :material-folder-open: ServerScriptService
-    - :octicons-file-code-16: Server
-- :material-folder-open: StarterPlayer
-    - :material-folder-open: StarterPlayerScripts
+    - :material-folder-open: ReplicatedStorage
+        - :octicons-file-code-16: RxNet (the module)
+        - :octicons-file-code-16: Net.rxn
+    - :material-folder-open: ServerScriptService
+        - :octicons-file-code-16: Server
+    - :material-folder-open: StarterPlayer
+        - :material-folder-open: StarterPlayerScripts
         - :octicons-file-code-16: Client
+
+</div>
 
 __ReplicatedStorage__
 

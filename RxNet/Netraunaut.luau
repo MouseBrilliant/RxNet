@@ -91,8 +91,8 @@ export type Netronaut = {
     SendPacket: (any...) -> nil, -- Sends a reliable packet to the server.
     TossPacket: (any...) -> nil, -- Sends an unreliable packet to the server.
     RecievePacket: (fn: (any...) -> any...) -> nil, -- Handles incoming packets from the server.
-    CallFunction: (any...) -> Promise.Promise<any...>, -- Calls a server function and returns a promise.
-    CallBootFunction: (any...) -> Promise.Promise<any...>
+    CallFunction: (any...) -> any, -- Calls a server function and returns a promise.
+    CallBootFunction: (any...) -> any,
 }
 
 --[[

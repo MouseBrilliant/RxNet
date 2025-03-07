@@ -4,8 +4,35 @@ repo_name: MouseBrilliant/RxNet
 repo_url: https://github.com/MouseBrilliant/RxNet
 theme:
   name: material
+  font:
+      text: Poppins
+      code: Jetbrains Mono
   palette:
-    primary: red
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: red
+      accent: red
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: red
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: red
+      accent: red
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
   features:
     - navigation.instant
     - navigation.instant.prefetch
@@ -14,6 +41,7 @@ theme:
     - search.highlight
     - content.code.copy
     - content.footnote.tooltips
+    
 plugins:
   - search
   - offline
@@ -30,3 +58,5 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
