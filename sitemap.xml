@@ -4,4 +4,44 @@
          <loc>https://mousebrilliant.github.io/RxNet/index.html</loc>
          <lastmod>2025-03-07</lastmod>
     </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Guide/1.%20Install.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Guide/2.%20Remote%20Events.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Guide/3.%20Remote%20Functions.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Guide/4.%20Best%20Practices.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Guide/5.%20Debugging.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Libraries/Promise.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Reference/1.%20Events.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Reference/2.%20Functions.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Reference/3.%20Unreliable%20Events.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
+    <url>
+         <loc>https://mousebrilliant.github.io/RxNet/Reference/4.%20Tessel.html</loc>
+         <lastmod>2025-03-07</lastmod>
+    </url>
 </urlset>
