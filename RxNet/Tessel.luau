@@ -302,14 +302,21 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
     local endPoint : EndPoint = TesselNet.EndPoints[key]
     if endPoint then
 
+        if endPoint.registered then
+            warn(`{key} is registered already, skipping...`)
+            return
+        end
+
         local cid : CantorID = endPoint.id
         if endPoint.type == TesselEvent then
             endPoint.registered = true
             CantorRecievingIndex[cid] = fn
         elseif endPoint.type == TesselFunction then
-            --//TODO:
+            endPoint.registered = true
+            CantorRecievingIndex[cid] = fn
         elseif endPoint.type == TesselUnreliable then
-            --//TODO:
+            endPoint.registered = true
+            CantorRecievingIndex[cid] = fn
         else
             assert(false,"This should not be happening")
         end
@@ -325,7 +332,6 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
             Then we setup outgoing endpoints
     ]]
     local t : EndPointType? = fn()
-    local outgoing : (any...)->any...? = nil
     local cid : CantorID = CantorPair(TesselNet.id,TesselNet.count);
     endPoint = {}
     TesselNet.count += 1;
@@ -343,20 +349,23 @@ Tessel.__newindex = function(net: table, key: string?, fn: ((any...) -> any...?)
                 error("Functions can only be invoked by clients!!")
             end
         else
-            Tessel.Outgoing[key] = function(...)
+            TesselNet.Outgoing[key] = function(...)
                 local args = ...
                 return Promise.new(function(resolve,reject,_)
-                    local result = Netronaut.CallFunction(cid,args)
-                    if result then
-                        resolve(result)
+                    local results = {Netronaut.CallFunction(cid,args)}
+                    if results[1] then
+                        resolve(table.unpack(results,2))
                     else
-                        reject()
+                        reject(table.unpack(results,2))
                     end
                 end)
             end
         end
     elseif t == TesselUnreliable then
         endPoint.type = TesselUnreliable
+        TesselNet.Outgoing[key] = function(...)
+            Netronaut.TossPacket(cid,...)
+        end
     else
         error(`Unexpected return value ({t}) from registered function ({key})!`)
     end
@@ -376,11 +385,43 @@ if IsServer then
             warn(`{player} attempted to call an unregistered or invalid RxNet endpoint`)
             return
         end
-        CantorRecievingIndex[cid](player,...)
+        if ... == nil then
+            CantorRecievingIndex[cid](player)
+        else
+            CantorRecievingIndex[cid](...,player)
+        end
+    end)
+
+    Netronaut.CatchPacket(function(player: Player, cid: CantorID, ...)
+        if cid == nil or CantorRecievingIndex[cid] == nil then
+            warn(`{player} attempted to call an unregistered or invalid RxNet endpoint`)
+            return
+        end
+        if ... == nil then
+            CantorRecievingIndex[cid](player)
+        else
+            CantorRecievingIndex[cid](...,player)
+        end
     end)
 
     Netronaut.HandleFunction(function(player : Player, cid : CantorID, ...)
-        
+        if cid == nil or CantorRecievingIndex[cid] == nil then
+            warn(`{player} attempted to call an unregistered or invalid RxNet endpoint`)
+            return
+        end
+        local promise : Promise.Promise<any...> = CantorRecievingIndex[cid](...,player)
+
+        if not Promise.is(promise) then
+            return true,...
+        end
+
+        local success,results = promise:await()
+
+        if success then
+            return true,results
+        end
+
+        return false,results
     end)
 
 else
@@ -393,6 +434,13 @@ else
         CantorRecievingIndex[cid](...)
     end)
 
+    Netronaut.CatchPacket(function(cid: CantorIndex,...)
+        if cid == nil or CantorRecievingIndex[cid] == nil then
+            warn(`server attempted to call an unregistered or invalid RxNet endpoint!!!`)
+            return
+        end
+        CantorRecievingIndex[cid](...)
+    end)
 
 end
 

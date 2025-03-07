@@ -15,6 +15,9 @@ Licence: MIT
 Edited: Mar, 1, 2025
 ```
 
+[Documentation](https://mousebrilliant.github.io/RxNet/)
+
+
 ## Key Features
 
 __Hassle-Free Networking__ – Eliminates the need for manually creating, storing, or managing remote events and functions.
@@ -91,6 +94,7 @@ Net.Foo()
 + Player ping!
 - Pong! 4
 ```
+
 
 ## Installation
 

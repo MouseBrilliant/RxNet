@@ -84,6 +84,7 @@ export type Netronaut = {
     SendPacket: (players: { [number]: Player }?, any...) -> nil, -- Sends a reliable packet.
     TossPacket: (players: { [number]: Player }?, any...) -> nil, -- Sends an unreliable packet.
     RecievePacket: (fn: (Player, any...) -> any...) -> nil, -- Handles incoming packets.
+    CatchPacket: (fn: (Player, any...) -> any...) -> nil, -- Handles incoming unreliable packets.
     HandleFunction: (fn: (Player, any...) -> any...) -> nil, -- Handles remote function calls.
     HandleBootFunction: (fn: (Player, any...)-> any...)->nil,
 
@@ -91,6 +92,7 @@ export type Netronaut = {
     SendPacket: (any...) -> nil, -- Sends a reliable packet to the server.
     TossPacket: (any...) -> nil, -- Sends an unreliable packet to the server.
     RecievePacket: (fn: (any...) -> any...) -> nil, -- Handles incoming packets from the server.
+    CatchPacket: (fn: (Player, any...) -> any...) -> nil, -- Handles incoming unreliable packets.
     CallFunction: (any...) -> any, -- Calls a server function and returns a promise.
     CallBootFunction: (any...) -> any,
 }
@@ -142,6 +144,14 @@ if game:GetService("RunService"):IsServer() then
         RemoteEvent.OnServerEvent:Connect(fn)
     end
 
+    function Netronaut.CatchPacket(fn: (Player, any...) -> any...)
+        --[[
+            Handles incoming reliable packets from clients.
+            If the callback returns a value, it is sent back as a response.
+        ]]
+        URemoteEvent.OnServerEvent:Connect(fn)
+    end
+
     function Netronaut.TossPacket(...)
         --[[
             Sends an unreliable packet to specified players or all if none specified.
@@ -189,6 +199,14 @@ else
             If the callback returns a value, it is sent back as a response.
         ]]
         RemoteEvent.OnClientEvent:Connect(fn)
+    end
+
+    function Netronaut.CatchPacket(fn: (any...) -> any...)
+        --[[
+            Handles incoming reliable packets from the server.
+            If the callback returns a value, it is sent back as a response.
+        ]]
+        URemoteEvent.OnClientEvent:Connect(fn)
     end
 
     function Netronaut.TossPacket(...)

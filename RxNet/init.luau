@@ -22,6 +22,7 @@
 ]]
 
 local Tessel = require(script:WaitForChild("Tessel"))
+local Promise = require(script:WaitForChild"Promise")
 
 --[[
 
@@ -32,7 +33,13 @@ local Tessel = require(script:WaitForChild("Tessel"))
 export type RxNet = {
     Register: (ModuleScript, table) -> nil, -- Registers a module for networking.
     GetCurrentTesselMap: () -> Tessel.SyncTesselation, -- Retrieves the current mapped modules.
+    Event : Tessel.Event,
+    Function: Tessel.Function,
+    Unreliable: Tessel.Unreliable,
+    Promise : Promise.PromiseModule,
 }
+
+export type Promise<T...> = Promise.Promise<T...>
 
 --[[
 
@@ -44,6 +51,7 @@ local RxNet = {
     Event = Tessel.Event,
     Function = Tessel.Function,
     Unreliable = Tessel.Unreliable,
+    Promise = Promise
 }
 
 function RxNet.Register(module: ModuleScript, net: table)
