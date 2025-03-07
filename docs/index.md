@@ -1,17 +1,9 @@
-+++
-title = ''
-date = 2025-03-06T12:38:58-05:00
-draft = true
-+++
-
 # RxNet 
 
 An Elegant, Fast, Roblox Networking Framework.
 
-{{< callout type="warning" >}}
-  RxNet is still pre-alpha, not recommended for
-  production code.
-{{< /callout >}}
+!!! note
+    RxNet is still experimental. Do not use in production.
 
 
 ## Key Features
@@ -29,50 +21,46 @@ __Zero Configuration__ – Ready to use out of the box with no setup required, y
 __Custom Streaming__ – Supports streaming large amounts of data efficiently, inspired by Madwork's Replica system.
 ## Show me the code!
 
-Assuming you have this structure.
-
-{{< filetree/container >}}
-  {{< filetree/folder name="ReplicatedStorage" >}}
-    {{< filetree/file name="RxNet" >}}
-    {{< filetree/file name="Net.rxn" >}}
-  {{< /filetree/folder >}}
-  {{< filetree/folder name="ServerScriptService" >}}
-    {{< filetree/file name="Server" >}}
-  {{< /filetree/folder >}}
-  {{< filetree/folder name="StarterPlayer" >}}
-      {{< filetree/folder name="StarterPlayerScripts" >}}
-        {{< filetree/file name="Client" >}}
-    {{< /filetree/folder >}}
-  {{< /filetree/folder >}}
-{{< /filetree/container >}}
+Note the structure for the files:
 
 
-### Replicated Storage (or shared directory)
+- :material-folder-open: ReplicatedStorage
+    - :octicons-file-code-16: RxNet (the module)
+    - :octicons-file-code-16: Net.rxn
+- :material-folder-open: ServerScriptService
+    - :octicons-file-code-16: Server
+- :material-folder-open: StarterPlayer
+    - :material-folder-open: StarterPlayerScripts
+        - :octicons-file-code-16: Client
 
-Register the module, define your api.
+__ReplicatedStorage__
+
+Register the module. Define your API.
 
 ```lua
 --Net.rxn
-local RxNet = require(game:GetService("ReplicatedStorage"):WaitForChild("RxNet"))
 local Net = {}
-RxNet.Register(script,Net)
+require(script.Parent:WaitForChild("RxNet")).Register(script,Net)
 
-function Net.Foo() end
-function Net.Bar(bar : string) end
+function Net.Foo() 
+end
+
+function Net.Bar(bar : string) 
+end
 
 return Net
 ```
 
-### Server
+__Server__
 
-- Calling the function[^1], fires the client.
-- Redefining the function, sets up listeners.
+Calling the function[^1], fires the client.
+Redefining the function, sets up listeners.
 
-[^1]: Last argument is always refrence to player.
+[^1]: Last argument should always refrence to a player.
 
 ```lua
 --Server
-local Net = require(game.ReplicatedStorage.Shared.Net)
+local Net = require(game.ReplicatedStorage.Net)
 
 function Net.Foo(player : Player)
     print(player,"ping!")
@@ -80,14 +68,14 @@ function Net.Foo(player : Player)
 end
 ```
 
-### Client
+__Client__
 
 Same as server, however, calling the function, fires the server.
 
 
 ```lua
 --Client
-local Net = require(game.ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
+local Net = require(game.ReplicatedStorage:WaitForChild("Net"))
 
 function Net.Bar(message : string)
     print(message)
@@ -98,7 +86,7 @@ end
 Net.Foo()
 ```
 
-### Output
+__Output__
 
 ```diff
 + Player ping!
